@@ -1,0 +1,134 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Lists Lambda and LINQ</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="#" @onclick="() => ToggleMenu(ref P1Menu)">
+                <span class="oi oi-plus" aria-hidden="true"></span> List and Agregate LAMBDA
+            </NavLink>
+            @if (P1Menu)
+            {
+                <div class="container" style="margin-left: 20px;padding-right:10px;">
+                    <NavLink class="nav-link" href="IndexP1">
+                        <span class="" aria-hidden="true"></span> Overview
+                    </NavLink>
+                    <NavLink class="nav-link" href="ListGen">
+                        <span class="" aria-hidden="true"></span> List Lambda and Aggregates
+                    </NavLink>
+                </div>
+            }
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="#" @onclick="() => ToggleMenu(ref P2Menu)">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> List and Agregate w/ LINQ
+            </NavLink>
+            @if (P2Menu)
+            {
+                <div class="container" style="margin-left: 20px;">
+                    <NavLink class="nav-link" href="IndexP2">
+                        <span class="" aria-hidden="true"></span> Overview
+                    </NavLink>
+                    <NavLink class="nav-link" href="LisLinq">
+                        <span class="" aria-hidden="true"></span> List : Lambda vs LINQ
+                    </NavLink>
+                </div>
+            }
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="#" @onclick="() => ToggleMenu(ref P3Menu)">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Implementing PAGINATION
+            </NavLink>
+            @if (P3Menu)
+            {
+                <div class="container" style="margin-left: 20px;">
+                    <NavLink class="nav-link" href="IndexP3">
+                        <span class="" aria-hidden="true"></span> Overview
+                    </NavLink>
+                    <NavLink class="nav-link" href="LisLinq">
+                        <span class="" aria-hidden="true"></span> List : TAKE( from..to ) clause
+                    </NavLink>
+                </div>
+            }
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="#" @onclick="() =>ToggleMenu(ref P4Menu)">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Search 
+            </NavLink>
+            @if (P4Menu)
+            {
+                <div class="container" style="margin-left: 20px;">
+                    <NavLink class="nav-link" href="IndexP4">
+                        <span class="" aria-hidden="true"></span> Overview
+                    </NavLink>
+                    <NavLink class="nav-link" href="LisSearch">
+                        <span class="" aria-hidden="true"></span> Lists and Where clause
+                    </NavLink>
+                </div>
+            }
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="#" @onclick="() => ToggleMenu(ref P5Menu)">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Group by
+            </NavLink>
+            @if (P5Menu)
+            {
+                <div class="container" style="margin-left: 20px;">
+                    <NavLink class="nav-link" href="IndexP5">
+                        <span class="" aria-hidden="true"></span> Overview
+                    </NavLink>
+                    <NavLink class="nav-link" href="LisGroup">
+                        <span class="" aria-hidden="true"></span> GroupBy
+                    </NavLink>
+                </div>
+            }
+        </div>
+@*        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="#" @onclick="() => ToggleP6()">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Search in List, Restriction clauses
+            </NavLink>
+            @if (P6Menu)
+            {
+                <div class="container" style="margin-left: 20px;">
+                    <NavLink class="nav-link" href="IndexP6">
+                        <span class="" aria-hidden="true"></span> Overview
+                    </NavLink>
+                    <NavLink class="nav-link" href="ListWhere">
+                        <span class="" aria-hidden="true"></span> Lists and Where clause
+                    </NavLink>
+                </div>
+            }
+        </div>*@
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = false;
+    private bool P1Menu = false;
+    private bool P2Menu = false;
+    private bool P3Menu = false;
+    private bool P4Menu = false;
+    private bool P5Menu = false;
+    //private bool P6Menu = false;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+
+    private void ToggleMenu( ref bool menuItm)
+    {
+        bool saveMenuItem = menuItm;
+        P1Menu = false; P2Menu = false; P3Menu = false;
+        P4Menu = false; P5Menu = false; //P6Menu = false;
+        menuItm = !saveMenuItem;
+    }
+}

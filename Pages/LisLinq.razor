@@ -1,0 +1,417 @@
+﻿@page "/LisLinq"
+@using static Common.Models;
+@using static Common.Code;
+@using static Common.Data;
+@using System.Linq;
+
+<PageTitle>Record List Generator</PageTitle>
+
+<!-- Html Code -->
+<div class="container-fluid h100" style="background-color:lightgray;overflow-y:auto;">
+    <div class="row">
+        <div class="col-12 flexColCenter mt-3">
+            <h1>Randomly Generated Person´s List</h1>
+            <p>This list will be used for testing the use of delegates in a Filter method to be developed on next video.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2 flexRowStart">
+            <button class="button flexColCenter" style="width:12%;height:100%" @onclick=UpDown><img class="Img @UpOrDownImg" /></button>
+            <select class="m-0 p-0" style="width:64%;height:100%" @onchange="OrderByLinq">
+                <option value="-1">Sort by</option>
+                @foreach (string s in optOrderBy.Split(";"))
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+        </div>
+        <div class="col-7">@Msg</div>
+        <div class="col-1">
+            <button class="button flexRowStart" style="width:100%;" @onclick="() => GenListPersons( nRecs)">Build <img class="htmlbtn" /></button>
+        </div>
+        <div class="col-1">
+            <input type="number" style="width:100%;" @bind=@nRecs />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-11">
+            @if (persons == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                    @*  <tr> @foreach(var prop in typeof(Person).GetProperties()) { <th>@prop.Name</th> } </tr> or (alternative) *@
+                        <tr>
+                            <th>Id</th> <th>Name</th> <th>Age</th> <th>Initial Date</th> <th>Hourly Wage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in persons.Take(( (PageNumber - 1) * RecsPerPage) .. (PageNumber * RecsPerPage) )) // ex: persons.Take( 10 .. 15)                
+                        {
+                            MinMaxReg = p.HourlyWage == minHourly ? "Min" : p.HourlyWage == maxHourly ? "Max" : "Reg";
+                            <tr>
+                                <td>@p.PersonId</td>
+                                <td>@p.Name</td>
+                                <td>@p.Age</td>
+                                <td>@p.InitialDate.ToShortDateString()</td>
+                                <td class=@MinMaxReg>@(p.HourlyWage.ToString("N2") + " CAD")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (persons.Count > 0)
+                {
+                    <div class="col-12" style="border-top: solid 1px green"></div>
+                }
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            <label>Statistics</label>
+            <button class="button d-flex flex-row" style="width:100%;" @onclick=Stats>Statistics Lambda<img class="htmlbtn" /></button>
+        </div>
+        <div class="col-1">
+            <label>Count</label>
+            <input type="Text" style="text-align:center;width:100%" @bind="nCount" />
+        </div>
+        <div class="col-1">
+            <label>Sum (age)</label>
+            <input type="Text" style="text-align:center;width:100%" @bind="tAge" />
+        </div>
+        <div class="col-1">
+            <label>Avg (age)</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=mAge />
+        </div>
+        <div class="col-1">
+            <label>StdDev age</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=stdDevAge />
+        </div>
+        <div class="col-1">
+            <label>Avg days</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=mDays />
+        </div>
+        <div class="col-1">
+            <label>Sum(Wage)</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=tHourlyWage />
+        </div>
+        <div class="col-1">
+            <label>Avg Wage</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=mHourlyWage />
+        </div>
+        <div class="col-1">
+            <label>Min Wage</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=minHourlyWage />
+        </div>
+        <div class="col-1">
+            <label>Max Wage</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=maxHourlyWage />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            <label>Statistics</label>
+            <button class="button d-flex flex-row" style="width:100%;" @onclick=StatsLinq>Statistics LINQ<img class="htmlbtn" /></button>
+        </div>
+        <div class="col-1">
+            <label>Count</label>
+            <input type="Text" style="text-align:center;width:100%" @bind="nCountLinq" />
+        </div>
+        <div class="col-1">
+            <label>Sum (age)</label>
+            <input type="Text" style="text-align:center;width:100%" @bind="tAgeLinq" />
+        </div>
+        <div class="col-1">
+            <label>Avg (age)</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=mAgeLinq />
+        </div>
+        <div class="col-1">
+            <label>StdDev age</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=stdDevAgeLinq />
+        </div>
+        <div class="col-1">
+            <label>Avg days</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=mDaysLinq />
+        </div>
+        <div class="col-1">
+            <label>Sum(Wage)</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=tHourlyWageLinq />
+        </div>
+        <div class="col-1">
+            <label>Avg Wage</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=mHourlyWageLinq />
+        </div>
+        <div class="col-1">
+            <label>Min Wage</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=minHourlyWageLinq />
+        </div>
+        <div class="col-1">
+            <label>Max Wage</label>
+            <input type="Text" style="text-align:center;width:100%" @bind=maxHourlyWageLinq />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            <label>Pagination</label>
+            <button class="button d-flex flex-row" style="width:100%;">Show Page<img class="PageImage" /></button>
+        </div>
+        <div class="col-1">
+            <label>Page Number</label>
+            <input type="number" style="text-align:center;width:100%" @bind="PageNumber" min="1"/>
+        </div>
+        <div class="col-1">
+            <label>Records per Page</label>
+            <input type="number" style="text-align:center;width:100%" @bind="@RecsPerPage" min="1"/>
+        </div>
+    </div>
+</div>
+<!-- Css Styling -->
+<style>
+    .h100 {
+        height: 100%;
+    }
+    .flexColStart {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        justify-content: center;
+        color: black;
+    }
+    .flexColCenter {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: black;
+    }
+    .flexRowStart {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: left;
+        color: black;
+    }
+    .flexRowEnd {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: right;
+        color: black;
+    }
+    button {
+        btn btn-labeled btn-primary btn-sm;
+        margin-right: 3px;
+        border: solid 1px red;
+    }
+    .htmlbtn {
+        background-image: url(/icons/maintenance_32px.png);
+        padding: 10px;
+        margin-left: 4px;
+        /*margin-left: 40px;*/
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+    .Img {
+        border: none;
+        padding: 4px;
+        margin-left: 1px;
+        margin-right: 1px;
+        height: 24px;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+    .UpImage {
+        background-image: url(/icons/UpArrow.png);
+    }
+    .DownImage {
+        background-image: url(/icons/DownArrow.png);
+    }
+    .PageImage{
+        background-image: url(/icons/Weather17.png);
+        padding: 10px;
+        margin-left: 4px;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+    }
+    label {
+        font-size: 12px;
+        color: red;
+    }
+    .Min {        
+        color: red
+    }
+    .Max {
+        color: blueviolet;
+    }
+    .Reg {
+        color: black;
+    }
+</style>
+<!-- C# Code -->
+@code {
+    private string optOrderBy = "Id;Name;Age;Initial Date;Hourly Wage";
+
+    private string UpOrDownImg = "UpImage";
+    private string MinMaxReg = "Reg";
+    private string LastOrderBY = "Id";
+
+    private int PageNumber = 1;
+    private int RecsPerPage = 50;
+    private int nRecs = 12;
+
+    private string Msg = "";
+    List<Person> persons = new();
+
+    private int nCount = 0;         // Stats by Lambda
+    private int tAge = 0;
+    private string mAge = "0";
+    private string stdDevAge = "0";
+    private string mDays = "0";
+    private int tHourlyWage = 0;
+    private string mHourlyWage = "0";
+    private string maxHourlyWage = "0";
+    private string minHourlyWage = "0";
+
+    private int nCountLinq = 0;         // Stats by LINQ
+    private int tAgeLinq = 0;
+    private string mAgeLinq = "0";
+    private string stdDevAgeLinq = "0";
+    private string mDaysLinq = "0";
+    private int tHourlyWageLinq = 0;
+    private string mHourlyWageLinq = "0";
+    private string maxHourlyWageLinq = "0";
+    private string minHourlyWageLinq = "0";
+    private decimal minHourly = 0;
+    private decimal maxHourly = 0;
+
+    private void ClearStats()
+    {
+        nCount = 0; tAge = 0; mAge = "0"; stdDevAge = "0"; mDays = "0"; tHourlyWage = 0; mHourlyWage = "0";
+        maxHourlyWage = "0"; minHourlyWage = "0"; minHourly = 0; maxHourly = 0;
+    }
+    private void ClearStatsLinq()
+    {
+        nCountLinq = 0; tAgeLinq = 0; mAgeLinq = "0"; stdDevAgeLinq = "0"; mDaysLinq = "0";
+        tHourlyWageLinq = 0; mHourlyWageLinq = "0"; maxHourlyWageLinq = "0"; minHourlyWageLinq = "0"; minHourly = 0; maxHourly = 0;
+    }
+    private void GenListPersons(int nRecs)
+    {
+        try
+        {
+            if (nRecs < (Enum.GetValues(typeof(FirstNames)).Length * Enum.GetValues(typeof(LastNames)).Length))
+            {
+                persons = GenPersons(nRecs);
+                ClearStats(); ClearStatsLinq(); PageNumber = 1;
+            }
+            else
+                Msg = "List length requires more unique records than we can generate !";
+        }
+        catch (Exception ex) { Msg = ex.Message; }        
+    }
+    private void Stats()
+    {
+        if (persons.Count > 0)
+        {
+            nCount = persons.Count;
+
+            tAge = persons.Sum(x => x.Age);
+            mAge = persons.Average(x => x.Age).ToString("N2");                      // Poderia fazer tb : tAge / nCount
+
+            mDays = persons.Average(x => (DateTime.Now - x.InitialDate).Days).ToString("N1");
+
+            tHourlyWage = (int)persons.Sum(x => x.HourlyWage);
+            mHourlyWage = persons.Average(x => (double)x.HourlyWage).ToString("N2");
+
+            minHourly = persons.Min(x => x.HourlyWage);
+            maxHourly = persons.Max(x => x.HourlyWage);
+
+            minHourlyWage = minHourly.ToString("N2");
+            maxHourlyWage = maxHourly.ToString("N2");
+
+            //  Desvio Padrão = ( Raiz Quadrada da ( Soma dos quadrados de ( x - xmedio) )  / n )
+            //  * dividida por n elementos se for população ou n - 1 se for amostra (sample)
+            double avgAge = persons.Average(x => x.Age);                            //  xmedio : tAge / nCount
+            double sumSqr = persons.Sum(x => (x.Age - avgAge) * (x.Age - avgAge));  //  soma dos quadrados do valor menos a media
+                                                                                    //  double sumSqr2 = persons.Sum(x => (x.Age - persons.Average(x => x.Age)) * (x.Age - persons.Average(x => x.Age))); // Funciona mas demora mais
+            stdDevAge = Math.Sqrt(sumSqr / nCount).ToString("N2");                  //  Se for sample nCount - 1 mas cuidado com a divisão por zero
+        }
+    }
+    private void StatsLinq()
+    {
+        if (persons.Count > 0)
+        {
+            nCountLinq = (from p in persons where p.Age > 15 && p.HourlyWage < 18 select p).Count();
+
+            tAgeLinq = (from p in persons select p.Age).Sum();
+            mAgeLinq = (from p in persons select p.Age).Average().ToString("N2");    // Poderia fazer tb : tAgeLinq / nCountLinq
+
+            mDaysLinq = (from p in persons select (DateTime.Now - p.InitialDate.Date).Days).Average().ToString("N1");
+
+            tHourlyWageLinq = (int)(from p in persons select p.HourlyWage).Sum();
+            mHourlyWageLinq = (from p in persons select p.HourlyWage).Average().ToString("N2");
+
+            minHourly = (from p in persons select p.HourlyWage).Min();
+            maxHourly = (from p in persons select p.HourlyWage).Max();
+
+            minHourlyWageLinq = minHourly.ToString("N2");
+            maxHourlyWageLinq = maxHourly.ToString("N2");
+
+            //  Desvio Padrão = ( Raiz Quadrada da ( Soma dos quadrados de ( x - xmedio) )  / n )
+            //  * dividida por n elementos se for população ou n - 1 se for amostra (sample)
+            double avgAge = (from p in persons select p.Age).Average();                             //  xmedio : tAgeLinq / nCountLinq
+            double sumSqr = (from p in persons select (p.Age - avgAge) * (p.Age - avgAge)).Sum();   //  soma dos quadrados do valor menos a media
+            stdDevAgeLinq = Math.Sqrt(sumSqr / nCountLinq).ToString("N2");                          //  Se for sample nCount - 1 mas cuidado com a divisão por zero
+        }
+    }
+    private void OrderBy(ChangeEventArgs e)
+    {
+        if (UpOrDownImg == "UpImage")
+        {
+            persons = e.Value!.ToString() == "Id" ? persons.OrderBy(x => x.PersonId).ToList() :
+                      e.Value!.ToString() == "Name" ? persons.OrderBy(x => x.Name).ToList() :
+                      e.Value!.ToString() == "Age" ? persons.OrderBy(x => x.Age).ToList() :
+                      e.Value!.ToString() == "Initial Date" ? persons.OrderBy(x => x.InitialDate).ToList() :
+                      e.Value!.ToString() == "Hourly Wage" ? persons.OrderBy(x => x.HourlyWage).ToList() : persons;
+        }
+        else
+        {
+            persons = e.Value!.ToString() == "Id" ? persons.OrderByDescending(x => x.PersonId).ToList() :
+                      e.Value!.ToString() == "Name" ? persons.OrderByDescending(x => x.Name).ToList() :
+                      e.Value!.ToString() == "Age" ? persons.OrderByDescending(x => x.Age).ToList() :
+                      e.Value!.ToString() == "Initial Date" ? persons.OrderByDescending(x => x.InitialDate).ToList() :
+                      e.Value!.ToString() == "Hourly Wage" ? persons.OrderByDescending(x => x.HourlyWage).ToList() : persons;
+        }
+        LastOrderBY = e.Value.ToString()!;
+    }
+    private void OrderByLinq(ChangeEventArgs e)
+    {
+        if (UpOrDownImg == "UpImage")
+        {
+            persons = e.Value!.ToString() == "Id" ? (from p in persons orderby p.PersonId select p).ToList() :
+                      e.Value!.ToString() == "Name" ? (from p in persons orderby p.Name select p).ToList() :
+                      e.Value!.ToString() == "Age" ? (from p in persons orderby p.Age select p).ToList() :
+                      e.Value!.ToString() == "Initial Date" ? (from p in persons orderby p.InitialDate select p).ToList() :
+                      e.Value!.ToString() == "Hourly Wage" ? (from p in persons orderby p.HourlyWage select p).ToList() : persons;
+        }
+        else
+        {
+            persons = e.Value!.ToString() == "Id" ? (from p in persons orderby p.PersonId descending select p).ToList() :
+                      e.Value!.ToString() == "Name" ? (from p in persons orderby p.Name descending select p).ToList() :
+                      e.Value!.ToString() == "Age" ? (from p in persons orderby p.Age descending select p).ToList() :
+                      e.Value!.ToString() == "Initial Date" ? (from p in persons orderby p.InitialDate descending select p).ToList() :
+                      e.Value!.ToString() == "Hourly Wage" ? (from p in persons orderby p.HourlyWage descending select p).ToList() : persons;
+        }
+        LastOrderBY = e.Value.ToString()!;
+    }
+    private void UpDown()
+    {
+        UpOrDownImg = UpOrDownImg == "UpImage" ? "DownImage" : "UpImage";
+        ChangeEventArgs e = new ChangeEventArgs();
+        e.Value = LastOrderBY;
+        OrderByLinq(e);
+    }
+}

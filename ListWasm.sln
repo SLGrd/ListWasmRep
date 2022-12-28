@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListWasm", "ListWasm.csproj", "{EF3A4290-C3A1-4B6A-A06C-1103F2AC2DE5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "..\Common\Common.csproj", "{5229F0E1-1830-45C1-80B3-0C204B843EC1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF3A4290-C3A1-4B6A-A06C-1103F2AC2DE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF3A4290-C3A1-4B6A-A06C-1103F2AC2DE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF3A4290-C3A1-4B6A-A06C-1103F2AC2DE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF3A4290-C3A1-4B6A-A06C-1103F2AC2DE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5229F0E1-1830-45C1-80B3-0C204B843EC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5229F0E1-1830-45C1-80B3-0C204B843EC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5229F0E1-1830-45C1-80B3-0C204B843EC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5229F0E1-1830-45C1-80B3-0C204B843EC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {81A433E2-F352-4B6D-922D-65E3649E2C68}
+	EndGlobalSection
+EndGlobal
