@@ -194,30 +194,32 @@
                     </tr>
                 </thead>
                 <tbody>
-@*                    @foreach (var group in from p in persons orderby p.Age 
+                    @foreach (var group in from p in persons orderby p.Age 
                                            group p by (p.Age, p.MF) into g
                                            orderby ( g.Key, g.Count())
                                            select ( new {   key = g.Key,
-                                                            age = g.Select(g => (int)g.Age ),
+                                                            age = g.Select(g => g.Age ).First(),
                                                             gender = g.Select(g => g.MF),
                                                             cnt = g.Count(), 
                                                             avgWage = g.Average(p => p.HourlyWage),
                                                             min = g.Min(p => p.HourlyWage),
                                                             max = g.Max(p => p.HourlyWage),
-                                                            pessoas = g.OrderBy(x => x.Name) })  )*@
+                                                            pessoas = g.OrderBy(x => x.Name) })  )
 
                     @* Exemplo classificação Lambda : .OrderBy(g => g.Age).ThenBy(g => g.MF) fx = g.Select( g => (g.Age / 5) ).First(),*@
 
-                    @foreach (var group in persons!.GroupBy(x => new {  x.Age, x.MF })
+@*                    @foreach (var group in persons!.GroupBy(x => new {  x.Age, x.MF })
                                                    .OrderBy( g => g.Key.Age).ThenBy( g => g.Key.MF).ThenBy( g => g.Count())
-                                                   .Select(  g => new {  key = g.Key,
+                                                   .Select(  g => new {  key = g.Key,                                                       
                                                                          age = g.Key.Age,
                                                                          gender = g.Key.MF,
                                                                          cnt = g.Count(),                                                                         
                                                                          avgWage = g.Average(p => p.HourlyWage),
                                                                          min = g.Min(p => p.HourlyWage),
                                                                          max = g.Max(p => p.HourlyWage),
-                                                                         pessoas = g.OrderBy(x => x.Name)    }))
+                                                                         pessoas = g.OrderBy(x => x.Name)    }))*@
+
+                    @* CONSULTE a documentação Microsoft - Enumerable.GroupBy Method - NET 7 .*@
                     {                       
                         <tr>
                             <!-- Builds a table row for each product -->
@@ -226,7 +228,7 @@
                             <td  style="text-align:center;"> @group.cnt </td> 
                             <td> @group.avgWage.ToString("N2") </td>
                             <td> @group.min.ToString("N2")</td>
-                            <td> @group.max.ToString("N2")</td>
+                            <td> @group.max.ToString("N2")</td>                           
                             <td>
                                 <button class="button flexRowStart" style="width:90%;height:50%;" @onclick="() => ToggleExpand( group.key.Age, group.key.MF )">Expand <img class="htmlbtn" /></button>
                             </td>
